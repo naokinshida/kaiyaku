@@ -1,0 +1,114 @@
+<!DOCTYPE html> 
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <title>予約一覧</title>
+</head>
+<body>
+    <div class="nagoyameshi-wrapper">
+        <!-- ヘッダー -->
+        <div th:replace="~{fragment :: header}"></div>
+        <main>
+            <div class="container nagoyameshi-container pb-5">
+                <div class="row justify-content-center">
+                    <div class="col-xxl-9 col-xl-10 col-lg-11">
+                        <nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">予約一覧</li>
+                            </ol>
+                        </nav>
+                        <h1 class="mb-3 text-center">予約一覧</h1>
+                        <div th:if="${param.reserved}" class="alert alert-info">
+                            予約が完了しました。
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">店舗名</th>
+                                    <th scope="col">予約日</th>
+                                    <th scope="col">人数</th>
+                                    <th scope="col">キャンセルする</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="reservation : ${reservationPage}">
+                                    <td>
+                                        <a th:href="@{/storeinfo/__${reservation.getStoreinfo().getId()}__}" th:text="${reservation.getStoreinfo().getStorename()}"></a>
+                                    </td>
+                                    <td th:text="${reservation.getReservationDay()}"></td>
+                                    <td th:text="${reservation.getPeople()} + '名'"></td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm cancel-button" data-bs-toggle="modal" data-bs-target="#cancelModal" data-th-data-reservation-id="${reservation.getId()}">
+                                            キャンセル
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- ページネーション -->
+                        <div th:if="${reservationPage.getTotalPages() > 1}" class="d-flex justify-content-center">
+                            <nav aria-label="予約一覧ページ">
+                                <ul class="pagination">
+                                    <li class="page-item">
+                                        <span th:if="${reservationPage.isFirst()}" class="page-link disabled">前</span>
+                                        <a th:unless="${reservationPage.isFirst()}" th:href="@{/reservations(page=${reservationPage.getNumber() - 1})}" class="page-link nagoyameshi-page-link">前</a>
+                                    </li>
+                                    <li th:each="i : ${#numbers.sequence(0, reservationPage.getTotalPages() - 1)}" class="page-item">
+                                        <span th:if="${i == reservationPage.getNumber()}" class="page-link active nagoyameshi-active" th:text="${i + 1}"></span>
+                                        <a th:unless="${i == reservationPage.getNumber()}" th:href="@{/reservations(page=${i})}" class="page-link nagoyameshi-page-link" th:text="${i + 1}"></a>
+                                    </li>
+                                    <li class="page-item">
+                                        <span th:if="${reservationPage.isLast()}" class="page-link disabled">次</span>
+                                        <a th:unless="${reservationPage.isLast()}" th:href="@{/reservations(page=${reservationPage.getNumber() + 1})}" class="page-link nagoyameshi-page-link">次</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- フッター -->
+        <div th:replace="~{fragment :: footer}"></div>
+    </div>
+
+    <!-- モーダル -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelModalLabel">予約キャンセル確認</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    本当にこの予約をキャンセルしますか？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                    <form id="cancelForm" method="post" th:action="@{/reservations/cancel/0}">
+                        <button type="submit" class="btn btn-danger">キャンセル</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragment :: scripts}"></div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cancelButtons = document.querySelectorAll('.cancel-button');
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const reservationId = this.getAttribute('data-reservation-id');
+                    const cancelForm = document.getElementById('cancelForm');
+                    cancelForm.setAttribute('action', '/reservations/cancel/' + reservationId);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

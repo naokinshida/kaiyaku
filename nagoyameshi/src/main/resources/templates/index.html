@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<div th:replace="~{fragment :: meta}"></div>
+	<div th:replace="~{fragment :: styles}"></div>
+	<title>なごや飯</title>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+
+
+	<header>
+		<div class="nagoyameshi-wrapper">
+			
+
+			<!-- ヘッダー -->
+			<div th:replace="~{fragment :: header}"></div>
+
+			<main>
+				<div class="container pt-4 pb-5 nagoyameshi-container">
+					<div th:if="${param.loggedIn}" class="alert alert-info">
+						ログインしました。
+					</div>
+
+					<div th:if="${param.loggedOut}" class="alert alert-info">
+						ログアウトしました。
+					</div>
+				
+					<div th:if="${successMessage}" class="alert alert-info">
+					     <span th:text="${successMessage}"></span>
+					</div>
+					
+				</div>
+			</main>
+
+
+			<h1>なごや飯</h1>
+			<div class="slide-container">
+				<div class="slide-wrapper">
+					<img class="slide" th:src="@{/images/hitumabushi.jpg}" alt="ひつまぶし">
+					<img class="slide" th:src="@{/images/misokatu.jpg}" alt="味噌カツ">
+					<img class="slide" th:src="@{/images/kootinn_4.jpg}" alt="コーチン">
+					<img class="slide" th:src="@{/images/piyorinn.jpg}" alt="ぴよりん">
+					<img class="slide" th:src="@{/images/kishimenn.jpg}" alt="きしめん">
+					<img class="slide" th:src="@{/images/tebasaki.jpg}" alt="手羽先">
+					<img class="slide" th:src="@{/images/doteyaki.jpg}" alt="どて焼き">
+					<img class="slide" th:src="@{/images/tosuto.jpg}" alt="トースト">
+					<img class="slide" th:src="@{/images/tennmusu.jpg}" alt="てんむす">
+					<img class="slide" th:src="@{/images/hitumabushi.jpg}" alt="ひつまぶし">
+				</div>
+			</div>
+
+	</header>
+	<main>
+	        <div class="container pt-4 pb-5 nagoyameshi-container">
+	            <div th:if="${param.loggedIn}" class="alert alert-info">ログインしました。</div>
+	            <div th:if="${param.loggedOut}" class="alert alert-info">ログアウトしました。</div>
+	            <div th:if="${successMessage}" class="alert alert-info"><span th:text="${successMessage}"></span></div>
+	        </div>
+
+	        <hr>
+
+	        <div class="d-flex justify-content-center">
+	            <form method="get" th:action="@{/storeinfo}" class="mb-5 nagoyameshi-search-form">
+	                <div class="input-group">
+	                    <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="店舗名">
+	                    <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button>
+	                </div>
+	            </form>
+	        </div>
+
+	        <h2 class="text-center mb-3">新着</h2>
+	        <div class="row row-cols-lg-5 row-cols-2 g-3 mb-5">
+	            <div class="col" th:each="newStoreinfo : ${newStoreinfo}">
+	                <a th:href="@{/storeinfo/__${newStoreinfo.getId()}__}" class="link-dark nagoyameshi-card-link">
+	                    <div class="card h-100">
+	                        <img th:if="${newStoreinfo.getImageName()}" th:src="@{/images/__${newStoreinfo.getImageName()}__}" class="card-img-top nagoyameshi-vertical-card-image" alt="店舗画像">
+	                        <img th:unless="${newStoreinfo.getImageName()}" th:src="@{/images/noImage.png}" class="card-img-top nagoyameshi-vertical-card-image" alt="NO IMAGE">
+	                        <div class="card-body">
+	                            <h3 class="card-title" th:text="${newStoreinfo.getStorename()}"></h3>
+	                            <p class="card-text mb-1">
+	                                <small class="text-muted" th:text="${newStoreinfo.getAddress()}"></small>
+	                            </p>
+	                            <p class="card-text">
+	                                <span th:text="${#numbers.formatInteger(newStoreinfo.getLowerprice(), 1, 'COMMA') + '円'}"></span>
+	                            </p>
+	                            <p class="card-text">
+	                                <span th:text="${#numbers.formatInteger(newStoreinfo.getMaxprice(), 1, 'COMMA') + '円'}"></span>
+	                            </p>
+	                        </div>
+	                    </div>
+	                </a>
+	            </div>
+	        </div>
+	    </main>
+
+	    <!-- フッター -->
+	    <div th:replace="~{fragment :: footer}"></div>
+	    <div th:replace="~{fragment :: scripts}"></div>
+	</body>
+
+	</html>

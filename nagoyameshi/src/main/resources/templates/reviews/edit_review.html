@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<div th:replace="~{fragment :: meta}"></div>
+	<div th:replace="~{fragment :: styles}"></div>
+    <input type="hidden" name="_csrf" value="${_csrf.token}">
+    <title>レビュー編集</title>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>レビュー編集</h1>
+    <!-- reviews/edit_review.html -->
+    <form th:action="@{${'/review/edit/' + review.id}}" method="post">
+        <input type="hidden" th:value="${review.id}" name="id"/>
+        
+        <label for="comment">コメント:</label>
+        <textarea id="comment" name="comment" th:text="${review.comment}"></textarea>
+        
+        <label for="star">評価:</label>
+        <input type="number" id="star" name="star" min="1" max="5" th:value="${review.star}"/>
+        
+        <button type="submit">更新</button>
+    </form>
+</body>
+</html>

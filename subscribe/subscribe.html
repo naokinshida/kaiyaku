@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>有料会員登録</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <h1>有料会員登録</h1>
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+    <stripe-buy-button
+      buy-button-id="buy_btn_1Q28X3ENjJ7uZX1aePYzlUky"
+      publishable-key="pk_test_51PhnYHENjJ7uZX1a07tUIvjuc3JcAnqKwnidR05fT26pKeWdhAJkhYx1B2pqzJePI3kGkFQHZPqDWbJbv6BYg9TJ00i5lsB3fH"
+    >
+    </stripe-buy-button>
+
+    <!-- 戻るボタンを追加 -->
+    <p><a href="javascript:history.back()">前のページに戻る</a></p>
+</body>
+</html>

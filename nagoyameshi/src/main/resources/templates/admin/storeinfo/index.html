@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragment :: meta}"></div>
+	    
+    <div th:replace="~{fragment :: styles}"></div> 
+	
+    <title>店舗情報</title>       
+</head>
+<body>
+    <div class="nagoyameshil-wrapper">
+		<!-- ヘッダー -->
+        <div th:replace="~{fragment :: header}"></div>
+        <main>
+			<div class="container pt-4 pb-5 nagoyameshi-container">
+			                <div class="row justify-content-center">
+			                    <div class="col-xxl-9 col-xl-10 col-lg-11">
+			                        <h1 class="mb-4 text-center">店舗情報</h1>
+			                        <div class="d-flex justify-content-between align-items-end flex-wrap">
+			                             <form method="get" th:action="@{/admin/storeinfo}" class="mb-3">
+			                                <div class="input-group">
+			                                  <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="店舗名で検索">
+			                                   <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button> 
+			                                 </div>               
+			                                </form>
+			                            <a th:href="@{/admin/storeinfo/register}" class="btn text-white shadow-sm mb-3 nagoyameshi-btn">登録</a>
+			                        </div>
+									
+									<div th:if="${successMessage}" class="alert alert-info">
+								      <span th:text="${successMessage}"></span>
+									  </div>
+									
+			                        <table class="table">
+			                            <thead>
+			                                <tr>
+			                                    <th scope="col">ID</th>
+			                                    <th scope="col">カテゴリID</th>
+			                                    <th scope="col">店舗名</th>
+			                                    <th scope="col">詳細</th>
+			                                    <th scope="col">最低価格</th>
+			                                    <th scope="col">最高価格</th>
+			                                    <th scope="col">開店時間</th>
+												<th scope="col">閉店時間</th>
+												<th scope="col">郵便番号</th>
+												<th scope="col">住所</th>
+												<th scope="col">電話番号</th>
+												<th scope="col">定休日</th>
+												<th scope="col"></th>
+			                                </tr>
+			                            </thead>
+			                            <tbody>
+			                                <tr th:each="storeinfo : ${storeinfoPage}">
+			                                    <td th:text="${storeinfo.getId}"></td>
+												<td th:text="${storeinfo.getCategoriesId}"></td>
+			                                    <td th:text="${storeinfo.getStorename}"></td>
+			                                    <td th:text="${storeinfo.getDescription}"></td>
+												<td th:text="${storeinfo.getLowerprice}"></td>
+												<td th:text="${storeinfo.getMaxprice}"></td>
+												<td th:text="${storeinfo.getOpening}"></td>
+												<td th:text="${storeinfo.getClosed}"></td>
+			                                    <td th:text="${storeinfo.getPostalCode}"></td>
+			                                    <td th:text="${storeinfo.getAddress}"></td>
+			                                    <td th:text="${storeinfo.getPhoneNumber}"></td>
+			                                    <td th:text="${storeinfo.getRegularHoliday}"></td>
+												<td><a th:href="@{/admin/storeinfo/__${storeinfo.getId()}__}">詳細</a></td>
+												<td><a href="#" class="nagoyameshi-link-danger" data-bs-toggle="modal" th:data-bs-target="${'#deleteStoreinfoModal' + storeinfo.getId()}">削除</a></td> 
+			                                
+												<!-- 削除用モーダル -->
+												        <div class="modal fade" th:id="${'deleteStoreinfoModal' + storeinfo.getId()}" tabindex="-1" th:aria-labelledby="${'deleteStoreinfoModalLabel' + storeinfo.getId()}">
+											           <div class="modal-dialog">
+		                                                  <div class="modal-content">
+			                                              <div class="modal-header">
+	                                              <h5 class="modal-title" th:id="${'deleteStoreinfoModalLabel' + storeinfo.getId()}" th:text="${storeinfo.getStorename() + 'を削除してもよろしいですか？'}"></h5>
+				                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+				                                  </div>
+			                                        <div class="modal-footer">
+		                                              <form method="post"th:action="@{/admin/storeinfo/__${storeinfo.getId()}__/delete}">
+	                                                  <button type="submit" class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>
+		                                             </form>
+		                                            </div>
+		                                           </div>
+		                                        </div>
+	                                         </div> 
+											</tr>
+			                            </tbody>
+			                        </table>
+			                        
+			                        <!-- ページネーション -->
+			                        <div th:if="${storeinfoPage.getTotalPages() > 1}" class="d-flex justify-content-center">
+			                            <nav aria-label="店舗情報">
+			                                <ul class="pagination">
+			                                <li class="page-item">
+			                                    <span th:if="${storeinfoPage.isFirst()}" class="page-link disabled">前</span>
+			                                    <a th:unless="${storeinfoPage.isFirst()}" th:href="@{/admin/storeinfo(page=${storeinfoPage.number - 1}, keyword=${keyword})}" class="page-link nagoyameshi-page-link">前</a>
+			                                </li>
+			                                <li th:each="i : ${#numbers.sequence(0, storeinfoPage.totalPages - 1)}" class="page-item">
+			                                    <span th:if="${i == storeinfoPage.number}" class="page-link active storeinfo-active" th:text="${i + 1}"></span>
+			                                    <a th:unless="${i == storeinfoPage.number}" th:href="@{/admin/storeinfo(page=${i}, keyword=${keyword})}" class="page-link nagoyameshi-page-link" th:text="${i + 1}"></a>
+			                                </li>
+			                                <li class="page-item">                        
+			                                    <span th:if="${storeinfoPage.isLast()}" class="page-link disabled">次</span>
+			                                    <a th:unless="${storeinfoPage.isLast()}" th:href="@{/admin/storeinfo(page=${storeinfoPage.number + 1}, keyword=${keyword})}" class="page-link nagoyameshi-page-link">次</a>
+			                                </li>
+			                                </ul>
+			                            </nav> 
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			        </main>
+					
+					<!-- フッター -->
+			        <div th:replace="~{fragment :: footer}"></div>
+			    </div>
+			    <div th:replace="~{fragment :: scripts}"></div>        
+			</body>
+			</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html> 
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <title>お気に入り一覧</title>
+</head>
+<body>
+    <div class="nagoyameshi-wrapper">
+        <!-- ヘッダー -->
+        <div th:replace="~{fragment :: header}"></div>
+        <main>
+            <div class="container nagoyameshi-container pb-5">
+                <div class="row justify-content-center">
+                    <div class="col-xxl-9 col-xl-10 col-lg-11">
+                        <nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">お気に入り一覧</li>
+                            </ol>
+                        </nav>
+                        <h1 class="mb-3 text-center">お気に入り一覧</h1>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>店舗名</th>
+                                    <th>追加日時</th>
+                                    <th>お気に入り解除</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="favorite : ${favorites}">
+                                    <td th:text="${favorite.storeinfo.storename}">店舗名</td>
+                                    <td th:text="${favorite.createdAt}">追加日時</td>
+                                    <td>
+                                        <!-- Ajaxによる非同期削除リクエスト -->
+                                        <button type="button" class="btn btn-danger btn-sm" 
+                                                th:data-id="${favorite.id}"
+                                                onclick="deleteFavorite(this)">削除</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- フッター -->
+        <div th:replace="~{fragment :: footer}"></div>
+    </div>
+
+    <!-- 削除完了モーダル -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">削除しました</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            お気に入りから削除しました。
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="redirectToFavorites()">閉じる</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript（jQueryとBootstrapが必要） -->
+    <script>
+        function deleteFavorite(button) {
+            var favoriteId = button.getAttribute("data-id");
+
+            fetch(`/favorites/${favoriteId}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_csrf"]').value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 削除が成功した場合、モーダルを表示
+                    var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                    deleteModal.show();
+                } else {
+                    console.error("削除に失敗しました");
+                }
+            })
+            .catch(error => {
+                console.error("エラーが発生しました", error);
+            });
+        }
+
+        // お気に入り一覧にリダイレクトする関数
+        function redirectToFavorites() {
+            window.location.href = '/storeinfo/favorites';
+        }
+    </script>
+
+    <div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>

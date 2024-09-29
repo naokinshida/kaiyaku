@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <title>あなたのレビュー一覧</title>
+    <style>
+        .star {
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragment :: header}"></div>
+
+    <div class="nagoysmeshi-wrapper">
+        <main>
+            <div class="container pt-4 pb-5 nagoyameshi-container">
+                <div class="row justify-content-center">
+                    <div class="col-xl-10 col-lg-12 col-md-12">
+                        <h1 class="mb-4 text-center">あなたのレビュー一覧</h1>
+                        
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>店舗名</th>
+                                    <th>評価</th>
+                                    <th>コメント</th>
+                                    <th>アクション</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="review : ${reviews}">
+                                    <td th:text="${review.storeInfo.storename}"></td> <!-- 店舗名を表示 -->
+                                    <td>
+                                        <th:block th:each="i : ${#numbers.sequence(1, review.star)}">
+                                            <span class="fa fa-star star"></span>
+                                        </th:block>
+                                        <th:block th:each="i : ${#numbers.sequence(review.star + 1, 5)}">
+                                            <span class="fa fa-star"></span>
+                                        </th:block>
+                                    </td>
+                                    <td th:text="${review.comment}"></td>
+                                    <td>
+                                        <a th:href="@{/review/edit/{id}(id=${review.id})}" class="btn btn-primary">編集</a>
+                                        <form th:action="@{/review/delete/{id}(id=${review.id})}" method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger">削除</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>                 
+        </main>
+
+        <div th:replace="~{fragment :: footer}"></div> 
+    </div>
+    
+    <div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>

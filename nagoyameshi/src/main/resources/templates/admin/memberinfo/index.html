@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragment :: meta}"></div>
+	    
+    <div th:replace="~{fragment :: styles}"></div> 
+	
+    <title>会員情報</title>       
+</head>
+<body>
+    <div class="nagoyameshil-wrapper">
+		<!-- ヘッダー -->
+        <div th:replace="~{fragment :: header}"></div>
+        <main>
+			<div class="container pt-4 pb-5 nagoyameshi-container">
+			                <div class="row justify-content-center">
+			                    <div class="col-xxl-9 col-xl-10 col-lg-11">
+			                        <h1 class="mb-4 text-center">会員情報</h1>
+			                        <div class="d-flex justify-content-between align-items-end flex-wrap">
+			                             <form method="get" th:action="@{/admin/memberinfo}" class="mb-3">
+			                                <div class="input-group">
+			                                  <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="メアドで検索">
+			                                   <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button> 
+			                                 </div>               
+			                                </form>
+			                            
+			                        </div>
+			                        <table class="table">
+			                            <thead>
+			                                <tr>
+			                                    <th scope="col">ID</th>
+												<th scope="col">会員ステータス</th>
+			                                    <th scope="col">名前</th>
+			                                    <th scope="col">メールアドレス</th>
+			                                    <th scope="col">郵便番号</th>
+			                                    <th scope="col">住所</th>
+			                                    <th scope="col">電話番号</th>
+			                                    
+			                                </tr>
+			                            </thead>
+			                            <tbody>
+			                                <tr th:each="memberinfo : ${memberinfoPage}">
+			                                    <td th:text="${memberinfo.getId}"></td>
+												<td th:text="${memberinfo.getRole}"></td>
+			                                    <td th:text="${memberinfo.getName}"></td>
+			                                    <td th:text="${memberinfo.getMailaddress}"></td>                                  
+			                                    <td th:text="${memberinfo.getPostal_code}"></td>
+			                                    <td th:text="${memberinfo.getAddress}"></td>
+			                                    <td th:text="${memberinfo.getPhone_number}"></td>
+			                                    
+			                                </tr>
+			                            </tbody>
+			                        </table>
+			                        
+			                        <!-- ページネーション -->
+			                        <div th:if="${memberinfoPage.getTotalPages() > 1}" class="d-flex justify-content-center">
+			                            <nav aria-label="会員情報">
+			                                <ul class="pagination">
+			                                <li class="page-item">
+			                                    <span th:if="${memberinfoPage.isFirst()}" class="page-link disabled">前</span>
+			                                    <a th:unless="${memberinfoPage.isFirst()}" th:href="@{/admin/memberinfo(page=${memberinfoPage.number - 1}, keyword=${keyword})}" class="page-link nagoyameshi-page-link">前</a>
+			                                </li>
+			                                <li th:each="i : ${#numbers.sequence(0, memberinfoPage.totalPages - 1)}" class="page-item">
+			                                    <span th:if="${i == memberinfoPage.number}" class="page-link active memberinfo-active" th:text="${i + 1}"></span>
+			                                    <a th:unless="${i == memberinfoPage.number}" th:href="@{/admin/memberinfo(page=${i}, keyword=${keyword})}" class="page-link nagoyameshi-page-link" th:text="${i + 1}"></a>
+			                                </li>
+			                                <li class="page-item">                        
+			                                    <span th:if="${memberinfoPage.isLast()}" class="page-link disabled">次</span>
+			                                    <a th:unless="${memberinfoPage.isLast()}" th:href="@{/admin/memberinfo(page=${memberinfoPage.number + 1}, keyword=${keyword})}" class="page-link nagoyameshi-page-link">次</a>
+			                                </li>
+			                                </ul>
+			                            </nav> 
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			        </main>
+					
+					<!-- フッター -->
+			        <div th:replace="~{fragment :: footer}"></div>
+			    </div>
+			    <div th:replace="~{fragment :: scripts}"></div>        
+			</body>
+			</html>
